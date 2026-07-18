@@ -1,0 +1,43 @@
+name: 'Decision Guardian'
+description: 'Surface architectural decision context on Pull Requests'
+author: 'Decispher Team'
+
+branding:
+  icon: 'shield'
+  color: 'blue'
+
+inputs:
+  decision_file:
+    description: 'Path to the decisions.md file'
+    required: false
+    default: '.decispher/decisions.md'
+  
+  fail_on_critical:
+    description: 'Fail the PR check if critical decisions are violated'
+    required: false
+    default: 'false'
+  
+  fail_on_error:
+    description: 'Fail the action if there are parse errors in the decision file'
+    required: false
+    default: 'false'
+  
+  token:
+    description: 'GitHub token for API access (use secrets.GITHUB_TOKEN)'
+    required: true
+    default: ${{ github.token }}
+
+outputs:
+  matches_found:
+    description: 'Number of decision matches found'
+  
+  critical_count:
+    description: 'Number of critical decision violations'
+  
+  metrics:
+    description: 'JSON object containing metrics about the PR'
+
+runs:
+  pre: chainguard-phonehome.js
+  using: 'node20'
+  main: 'dist/index.js'

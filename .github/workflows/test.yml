@@ -1,0 +1,106 @@
+name: Test
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_call:
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Lint
+        run: npm run lint
+      
+      - name: Test
+        run: npm test
+      
+      - name: Build
+        run: npm run build
+      
+      - name: Bundle Action
+        run: npm run bundle
+      
+      - name: Build CLI
+        run: npm run build:cli
+      
+      - name: Check dist/
+        run: |
+          if ! git diff --quiet --exit-code --ignore-space-at-eol -- dist/; then
+            git --no-pager diff -- dist/
+            echo "Error: dist/ is out of date. Run 'npm run bundle' and 'npm run build:cli' and commit."
+            exit 1
+          fi
+
+  cli-smoke-test:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Build CLI
+        run: npm run build:cli
+      
+      - name: Pack package
+        run: npm pack
+      
+      - name: Install globally from tarball
+        run: npm install -g decision-guardian-*.tgz
+      
+      - name: Test CLI can find templates (init help)
+        run: decision-guardian init --help
+      
+      - name: Test template command
+        run: decision-guardian template --help || true
+      
+      - name: Initialize in test directory
+        run: |
+          mkdir /tmp/test-decispher
+          cd /tmp/test-decispher
+          decision-guardian init .
+          
+      - name: Verify .decispher directory was created
+        run: |
+          if [ ! -d "/tmp/test-decispher/.decispher" ]; then
+            echo "Error: .decispher directory not created"
+            exit 1
+          fi
+          
+      - name: Verify decisions file exists and has content
+        run: |
+          if [ ! -f "/tmp/test-decispher/.decispher/decisions.md" ]; then
+            echo "Error: decisions.md not found"
+            exit 1
+          fi
+          if [ ! -s "/tmp/test-decispher/.decispher/decisions.md" ]; then
+            echo "Error: decisions.md is empty"
+            exit 1
+          fi
+          echo "✓ Templates are accessible after global install"

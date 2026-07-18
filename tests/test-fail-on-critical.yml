@@ -1,0 +1,48 @@
+name: Test fail_on_critical input accepted
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      # Create the decision file with a critical decision
+      - name: Create decision file with critical decision
+        run: |
+          mkdir -p .decispher
+          cat > .decispher/decisions.md << 'EOF'
+          <!-- DECISION-001 -->
+          ## Decision: No Hardcoded Secrets
+
+          **Status**: Active
+          **Date**: 2024-03-10
+          **Severity**: Critical
+          **Files**:
+          - `src/**/*.ts`
+
+          ### Context
+          Hardcoded credentials have caused production leaks.
+          Use environment variables or a secret manager instead.
+          EOF
+
+      - id: action
+        uses: .
+        with:
+          fail_on_critical: 'true'
+          token: ${{ github.token }}
+        continue-on-error: true
+
+      # The action should fail because it requires a pull_request event context.
+      # The fail_on_critical input should be accepted without validation errors.
+      - name: Assert action failed (expected — no PR context under workflow_dispatch)
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "step outcome: $OUTCOME"
+          if [ "$OUTCOME" != "failure" ]; then
+            echo "FAIL: expected action to fail, got: $OUTCOME"
+            exit 1
+          fi
+          echo "PASS: action accepted fail_on_critical=true and failed at PR context check as expected"

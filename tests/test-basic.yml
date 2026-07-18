@@ -1,0 +1,48 @@
+name: Test basic usage - default decision file
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      # Create the default decision file so the health check passes
+      - name: Create default decision file
+        run: |
+          mkdir -p .decispher
+          cat > .decispher/decisions.md << 'EOF'
+          <!-- DECISION-001 -->
+          ## Decision: Database Connection Pool
+
+          **Status**: Active
+          **Date**: 2024-01-15
+          **Severity**: Critical
+          **Files**:
+          - `src/db/pool.ts`
+
+          ### Context
+          Connection pool size must stay at 20 to prevent exhaustion.
+          EOF
+
+      - id: action
+        uses: .
+        with:
+          token: ${{ github.token }}
+        continue-on-error: true
+
+      # The action requires a pull_request event context.
+      # Under workflow_dispatch (act), it will fail with
+      # "This action only works on pull_request events".
+      # We assert the step did fail (outcome is failure).
+      - name: Assert action ran and failed as expected (no PR context)
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "step outcome: $OUTCOME"
+          if [ "$OUTCOME" != "failure" ]; then
+            echo "FAIL: expected action to fail due to missing PR context, got: $OUTCOME"
+            exit 1
+          fi
+          echo "PASS: action correctly failed without a pull_request event context"

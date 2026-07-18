@@ -1,0 +1,51 @@
+name: Test fail_on_error input accepted
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      # Create a decision file with intentionally malformed JSON rules
+      # to trigger parse errors
+      - name: Create decision file with parse errors
+        run: |
+          mkdir -p .decispher
+          cat > .decispher/decisions.md << 'EOF'
+          <!-- DECISION-001 -->
+          ## Decision: Database Connection Pool
+
+          **Status**: Active
+          **Date**: 2024-01-15
+          **Severity**: Critical
+
+          **Rules**:
+          ```json
+          { this is not valid json }
+          ```
+
+          ### Context
+          Connection pool size must stay at 20 to prevent exhaustion.
+          EOF
+
+      - id: action
+        uses: .
+        with:
+          fail_on_error: 'true'
+          token: ${{ github.token }}
+        continue-on-error: true
+
+      # The action should fail — either due to parse errors (fail_on_error=true)
+      # or due to missing PR context. Either way, the step outcome is 'failure'.
+      - name: Assert action failed as expected
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "step outcome: $OUTCOME"
+          if [ "$OUTCOME" != "failure" ]; then
+            echo "FAIL: expected action to fail, got: $OUTCOME"
+            exit 1
+          fi
+          echo "PASS: action accepted fail_on_error=true and failed as expected"

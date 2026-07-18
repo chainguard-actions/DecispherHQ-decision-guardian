@@ -1,0 +1,31 @@
+name: Test invalid path traversal rejected
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      # Attempt to use a path traversal in decision_file input.
+      # The ConfigSchema rejects paths containing '..' with
+      # "Path traversal not allowed", causing the action to fail
+      # during config loading (before any health checks).
+      - id: action
+        uses: .
+        with:
+          decision_file: '../etc/passwd'
+          token: ${{ github.token }}
+        continue-on-error: true
+
+      - name: Assert action rejected path traversal
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "step outcome: $OUTCOME"
+          if [ "$OUTCOME" != "failure" ]; then
+            echo "FAIL: expected action to fail due to path traversal, got: $OUTCOME"
+            exit 1
+          fi
+          echo "PASS: action correctly rejected path traversal in decision_file input"
