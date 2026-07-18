@@ -8,6 +8,7 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 
 | Version | Tag | Upstream commit |
 |---------|-----|-----------------|
+| v1.1.0 | [`v1.1.0`](https://github.com/chainguard-actions/DecispherHQ-decision-guardian/tree/v1.1.0) | [`364afb1`](https://github.com/DecispherHQ/decision-guardian/commit/364afb18e65e9520c657cd955680b1b07c0c9eba) |
 | v1.2.1 | [`v1.2.1`](https://github.com/chainguard-actions/DecispherHQ-decision-guardian/tree/v1.2.1) | [`2a33def`](https://github.com/DecispherHQ/decision-guardian/commit/2a33def56015448351415773d4e6210d07f57f04) |
 
 ## Privacy
