@@ -1,4 +1,4 @@
-name: Test basic usage
+name: Test default decision file path
 on:
   workflow_dispatch:
 jobs:
@@ -7,35 +7,32 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Create decisions file
+      - name: Create decisions file at default path
         run: |
           mkdir -p .decispher
           cat > .decispher/decisions.md << 'EOF'
           # Architectural Decisions
 
-          ## ADR-001: Use Node.js for backend
+          ## ADR-001: Frontend Framework
           - Status: Accepted
-          - Context: We need a backend runtime
-          - Decision: Use Node.js
-          - Consequences: Fast I/O, large ecosystem
+          - Context: We need a frontend framework
+          - Decision: Use React
+          - Consequences: Component-based UI, large ecosystem
 
-          ## ADR-002: Use PostgreSQL for database
+          ## ADR-002: Testing Strategy
           - Status: Accepted
-          - Context: We need a relational database
-          - Decision: Use PostgreSQL
-          - Consequences: ACID compliance, strong community
+          - Context: We need automated testing
+          - Decision: Use Jest for unit tests
+          - Consequences: Fast test execution, good coverage tooling
           EOF
 
       - id: action
         uses: .
         continue-on-error: true
         with:
-          decision_file: '.decispher/decisions.md'
-          fail_on_critical: 'false'
-          fail_on_error: 'false'
           token: ${{ github.token }}
 
-      - name: Assert action behaves correctly under workflow_dispatch
+      - name: Assert action behaves correctly with default config under workflow_dispatch
         env:
           OUTCOME: ${{ steps.action.outcome }}
         run: |
@@ -46,7 +43,7 @@ jobs:
           if [ "$OUTCOME" = "failure" ]; then
             echo "PASS: action correctly reported failure when not running on a pull_request event"
           elif [ "$OUTCOME" = "success" ]; then
-            echo "PASS: action completed successfully"
+            echo "PASS: action completed successfully with default decision_file path"
           else
             echo "FAIL: unexpected outcome: $OUTCOME"
             exit 1

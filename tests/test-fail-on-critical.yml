@@ -1,4 +1,4 @@
-name: Test basic usage
+name: Test fail_on_critical flag
 on:
   workflow_dispatch:
 jobs:
@@ -7,23 +7,25 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Create decisions file
+      - name: Create decisions file with critical decision
         run: |
           mkdir -p .decispher
           cat > .decispher/decisions.md << 'EOF'
           # Architectural Decisions
 
-          ## ADR-001: Use Node.js for backend
+          ## ADR-001: Security Requirements
           - Status: Accepted
-          - Context: We need a backend runtime
-          - Decision: Use Node.js
-          - Consequences: Fast I/O, large ecosystem
+          - Severity: critical
+          - Context: All API endpoints must be authenticated
+          - Decision: Use JWT tokens for authentication
+          - Consequences: Secure API access
 
-          ## ADR-002: Use PostgreSQL for database
+          ## ADR-002: Code Style
           - Status: Accepted
-          - Context: We need a relational database
-          - Decision: Use PostgreSQL
-          - Consequences: ACID compliance, strong community
+          - Severity: warning
+          - Context: Consistent code style improves readability
+          - Decision: Use ESLint with standard config
+          - Consequences: Consistent codebase
           EOF
 
       - id: action
@@ -31,11 +33,11 @@ jobs:
         continue-on-error: true
         with:
           decision_file: '.decispher/decisions.md'
-          fail_on_critical: 'false'
+          fail_on_critical: 'true'
           fail_on_error: 'false'
           token: ${{ github.token }}
 
-      - name: Assert action behaves correctly under workflow_dispatch
+      - name: Assert action behaves correctly with fail_on_critical under workflow_dispatch
         env:
           OUTCOME: ${{ steps.action.outcome }}
         run: |
@@ -43,8 +45,9 @@ jobs:
           # The action only works on pull_request events.
           # Under workflow_dispatch there is no PR context, so the action
           # is expected to fail with "This action only works on pull_request events".
+          # With fail_on_critical=true, a failure is also expected if critical violations found.
           if [ "$OUTCOME" = "failure" ]; then
-            echo "PASS: action correctly reported failure when not running on a pull_request event"
+            echo "PASS: action correctly reported failure (no PR context or critical violation)"
           elif [ "$OUTCOME" = "success" ]; then
             echo "PASS: action completed successfully"
           else
