@@ -1,0 +1,17 @@
+name = "decision-guardian-telemetry"
+main = "worker.ts"
+compatibility_date = "2024-09-23"
+
+[vars]
+ENVIRONMENT = "production"
+
+[observability]
+enabled = true
+
+[observability.logs]
+invocation_logs = false
+
+[[kv_namespaces]]
+binding = "TELEMETRY_KV"
+id = "6d5d5f96934d4d5097c0526d6662d366"
+preview_id = "6d5d5f96934d4d5097c0526d6662d366"

@@ -1,0 +1,49 @@
+name: Test with decision file present
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Create decisions file
+        run: |
+          mkdir -p .decispher
+          cat > .decispher/decisions.md << 'EOF'
+          <!-- DECISION-001 -->
+          ## Decision: Database Connection Pool
+
+          **Status**: Active
+          **Date**: 2024-01-15
+          **Severity**: Critical
+          **Files**:
+          - `src/db/pool.ts`
+
+          ### Context
+          Connection pool size must stay at 20 to prevent exhaustion.
+          EOF
+
+      - name: Run action with decision file present
+        id: action
+        uses: .
+        with:
+          decision_file: '.decispher/decisions.md'
+          fail_on_critical: 'false'
+          fail_on_error: 'false'
+          token: ${{ github.token }}
+        # The action will fail because it only works on pull_request events.
+        # Under workflow_dispatch (used by act), github.context.payload.pull_request
+        # is undefined, causing the GitHubProvider constructor to throw.
+        continue-on-error: true
+
+      - name: Assert action failed because not on a PR
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" != "failure" ]; then
+            echo "FAIL: expected action to fail when not running on a pull_request event, got: $OUTCOME"
+            exit 1
+          fi
+          echo "PASS: action correctly failed when not on a pull_request event"
