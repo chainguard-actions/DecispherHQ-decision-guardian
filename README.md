@@ -6,13 +6,13 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 
 ## Versions
 
-| Version | Tag | Upstream commit |
-|---------|-----|-----------------|
-| v1.0.0 | [`v1.0.0`](https://github.com/chainguard-actions/DecispherHQ-decision-guardian/tree/v1.0.0) | [`9a212d7`](https://github.com/DecispherHQ/decision-guardian/commit/9a212d732358fc5bc53d63eedf429b81508c1114) |
-| v1.1.0 | [`v1.1.0`](https://github.com/chainguard-actions/DecispherHQ-decision-guardian/tree/v1.1.0) | [`364afb1`](https://github.com/DecispherHQ/decision-guardian/commit/364afb18e65e9520c657cd955680b1b07c0c9eba) |
-| v1.2.0 | [`v1.2.0`](https://github.com/chainguard-actions/DecispherHQ-decision-guardian/tree/v1.2.0) | [`c1d53e6`](https://github.com/DecispherHQ/decision-guardian/commit/c1d53e6e3fb5074c27aa949f77ab4ca39fc80c29) |
-| v1.2.1 | [`v1.2.1`](https://github.com/chainguard-actions/DecispherHQ-decision-guardian/tree/v1.2.1) | [`2a33def`](https://github.com/DecispherHQ/decision-guardian/commit/2a33def56015448351415773d4e6210d07f57f04) |
-| v1.3.0 | [`v1.3.0`](https://github.com/chainguard-actions/DecispherHQ-decision-guardian/tree/v1.3.0) | [`9581e15`](https://github.com/DecispherHQ/decision-guardian/commit/9581e159330b94aa684700379ccabcb7e8662eac) |
+| Version | Tag | Upstream commit | Hardening report |
+|---------|-----|-----------------|------------------|
+| v1.0.0 | [`v1.0.0`](https://github.com/chainguard-actions/DecispherHQ-decision-guardian/tree/v1.0.0) | [`9a212d7`](https://github.com/DecispherHQ/decision-guardian/commit/9a212d732358fc5bc53d63eedf429b81508c1114) | [`HARDENING.md`](https://github.com/chainguard-actions/DecispherHQ-decision-guardian/blob/v1.0.0/HARDENING.md) |
+| v1.1.0 | [`v1.1.0`](https://github.com/chainguard-actions/DecispherHQ-decision-guardian/tree/v1.1.0) | [`364afb1`](https://github.com/DecispherHQ/decision-guardian/commit/364afb18e65e9520c657cd955680b1b07c0c9eba) | [`HARDENING.md`](https://github.com/chainguard-actions/DecispherHQ-decision-guardian/blob/v1.1.0/HARDENING.md) |
+| v1.2.0 | [`v1.2.0`](https://github.com/chainguard-actions/DecispherHQ-decision-guardian/tree/v1.2.0) | [`c1d53e6`](https://github.com/DecispherHQ/decision-guardian/commit/c1d53e6e3fb5074c27aa949f77ab4ca39fc80c29) | [`HARDENING.md`](https://github.com/chainguard-actions/DecispherHQ-decision-guardian/blob/v1.2.0/HARDENING.md) |
+| v1.2.1 | [`v1.2.1`](https://github.com/chainguard-actions/DecispherHQ-decision-guardian/tree/v1.2.1) | [`2a33def`](https://github.com/DecispherHQ/decision-guardian/commit/2a33def56015448351415773d4e6210d07f57f04) | [`HARDENING.md`](https://github.com/chainguard-actions/DecispherHQ-decision-guardian/blob/v1.2.1/HARDENING.md) |
+| v1.3.0 | [`v1.3.0`](https://github.com/chainguard-actions/DecispherHQ-decision-guardian/tree/v1.3.0) | [`9581e15`](https://github.com/DecispherHQ/decision-guardian/commit/9581e159330b94aa684700379ccabcb7e8662eac) | [`HARDENING.md`](https://github.com/chainguard-actions/DecispherHQ-decision-guardian/blob/v1.3.0/HARDENING.md) |
 
 ## Privacy
 
